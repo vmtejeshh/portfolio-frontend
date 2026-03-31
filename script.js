@@ -3,23 +3,26 @@ document.addEventListener("DOMContentLoaded", () => {
   const form = document.getElementById("contactForm");
   const status = document.getElementById("status");
 
+  // ❗ Ensure form exists
   if (!form) {
-    console.error("❌ contactForm not found");
+    console.error("❌ contactForm not found in HTML");
     return;
   }
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
+    // Show sending state
     if (status) status.innerText = "Sending...";
 
+    // Get values safely
     const name = document.getElementById("name")?.value.trim();
     const email = document.getElementById("email")?.value.trim();
     const message = document.getElementById("message")?.value.trim();
 
-    // ✅ validation safety
+    // ❗ Validate inputs
     if (!name || !email || !message) {
-      if (status) status.innerText = "❌ All fields required";
+      if (status) status.innerText = "❌ Please fill all fields";
       return;
     }
 
@@ -27,16 +30,17 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("http://localhost:5000/api/contact", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
-        body: JSON.stringify({ name, email, message }),
+        body: JSON.stringify({ name, email, message })
       });
 
       let result = {};
+
+      // ❗ Handle invalid JSON safely
       try {
         result = await res.json();
       } catch {
-        // fallback if response is not JSON
         result.msg = "Invalid server response";
       }
 
@@ -47,8 +51,8 @@ document.addEventListener("DOMContentLoaded", () => {
         if (status) status.innerText = result.msg || "❌ Failed to send";
       }
 
-    } catch (err) {
-      console.error("Fetch error:", err);
+    } catch (error) {
+      console.error("❌ Fetch error:", error);
       if (status) status.innerText = "❌ Server not reachable";
     }
   });
